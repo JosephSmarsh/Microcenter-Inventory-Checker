@@ -1,15 +1,57 @@
 import requests
-import time
 from bs4 import BeautifulSoup
 from datetime import datetime
+import Constants
+from pushsafer import Client
 
 
-def checkinventory(ttr):
+def checkinventory():
+    result = BeautifulSoup(requests.get(Constants.microcenter).content, "html.parser")\
+        .find("p", class_="inventory").text.strip()
+    if result == "SOLD OUT at Denver Store":
+        return 'Sold Out'
+    else:
+        return int(result)
+
+
+def sendnotification(message, title):
+    client = Client(Constants.pushsaferkey)
+    device = Constants.deviceid
+
+    client.send_message(message, title, device)
+
+
+def gettime():
+    return datetime.now().strftime("%H:%M:%S | %m/%d/%Y")
+
+
+def savedata(data, i):
+    with open('historicaldata.csv', 'a') as f:
+        f.write("\n" + str(i) + ", " + data.replace(" | ", ", "))
+        f.close()
+
+
+
+def setupscript():
     while True:
-        microcenter = requests.get('https://www.microcenter.com/product/621439/raspberry-pi-4-model-b-2gb-ddr4')
-        soup = BeautifulSoup(microcenter.content, "html.parser")
-        result = soup.find("p", class_="inventory").text.strip()
-        currenttime = datetime.now().time()
-        print(result + currenttime.strftime(" %H:%M:%S"))
-        time.sleep(ttr)
+        ttr = int(input("Enter website refresh time (sec): "))
+        if ttr < 60:
+            print("Enter valid refresh time (>60 sec)")
+            continue
+        else:
+            while True:
+                savedata = input("Save data to historicaldata.csv (Y/N): ").lower()
+                if savedata == "n":
+                    break
+                elif savedata == "y":
+                    with open("historicaldata.csv", "w") as f:
+                        f.write("ID, INVENTORY, TIME, DATE")
+                        f.close()
+                    break
+                else:
+                    print("Enter a valid response")
+                    continue
+            return ttr, savedata
+
+
 

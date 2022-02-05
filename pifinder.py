@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import Constants
 from pushsafer import Client
+from configparser import ConfigParser
 
 
 def checkinventory():
@@ -30,8 +31,22 @@ def savedata(data, i):
         f.write("\n" + str(i) + ", " + data.replace(" | ", ", "))
         f.close()
 
+def setupscript():
+    config = ConfigParser()
+    config.read('config.ini')
 
+    ttr = config.getint('main', 'refreshtime')
+    savecsv = config.get('main', 'savecsv')
+    notification = config.get('main', 'sendnotification')
 
+    if savecsv == "y":
+        with open("historicaldata.csv", "w") as f:
+            f.write("ID, INVENTORY, TIME, DATE")
+            f.close()
+
+    return ttr, savecsv, notification
+
+""" - Use for no config file setup 
 def setupscript():
     while True:
         ttr = int(input("Enter website refresh time (sec): "))
@@ -52,6 +67,4 @@ def setupscript():
                     print("Enter a valid response")
                     continue
             return ttr, savedata
-
-
-
+"""

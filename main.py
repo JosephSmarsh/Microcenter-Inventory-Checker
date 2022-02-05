@@ -11,6 +11,7 @@ def main():
         setup = setupscript()
         ttr = setup[0]
         save = setup[1]
+        notification = setup[2]
         counter = 1
 
         while save == 'y':
@@ -26,7 +27,7 @@ def main():
             time.sleep(ttr)
 
     finally:
-        breakpoint(print('There was an error with main setupscript() call'), main())
+        breakpoint(print('There was an error with main setupscript() call'))
 
 
 if __name__ == "__main__":

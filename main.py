@@ -82,7 +82,7 @@ def main():
         """
 
     finally:
-        breakpoint(print('There was an error with main setupscript() call'))
+        pass
 
 
 if __name__ == "__main__":

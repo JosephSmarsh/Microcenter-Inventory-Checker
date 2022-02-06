@@ -31,6 +31,7 @@ def savedata(data, i):
         f.write("\n" + str(i) + ", " + data.replace(" | ", ", "))
         f.close()
 
+
 def setupscript():
     config = ConfigParser()
     config.read('config.ini')
@@ -45,6 +46,7 @@ def setupscript():
             f.close()
 
     return ttr, savecsv, notification
+
 
 """ - Use for no config file setup 
 def setupscript():
@@ -67,4 +69,24 @@ def setupscript():
                     print("Enter a valid response")
                     continue
             return ttr, savedata
+"""
+""" - Use for Config Class with config file 
+class Config:
+    def __init__(self, refresh, save, notification):
+        self.refresh = refresh
+        self.save = save
+        self.notification = notification
+
+    def setupenv(self):
+        config = ConfigParser()
+        config.read('config.ini')
+
+        self.refresh = config.getint('main', 'refreshtime')
+        self.save = config.get('main', 'savecsv')
+        self.notification = config.get('main', 'sendnotification')
+
+        if self.save == "y":
+            with open("historicaldata.csv", "w") as f:
+                f.write("ID, INVENTORY, TIME, DATE")
+                f.close()
 """

@@ -11,6 +11,6 @@ pushsaferkey = ''
 deviceid = ''
 microcenter = ''
 ```
-pushsaferkey: Acquired when you register for [pushsafer](https://www.pushsafer.com/ "Pushsafer Registration")
+pushsaferkey: Acquired when you register for [pushsafer](https://www.pushsafer.com/ "Pushsafer Registration") \n
 deviceid: Acquired when a device is registered to your pushsafer account
 microcenter: The link to the microcenter page (To be made an array of national links and local stores)

@@ -1,7 +1,7 @@
 # piScraper
 piScraper gathers current raspberry pi inventory from local and national stores and checks for changes in that inventory. If there is a change in the status of the inventory, piScraper can send a notification using pushsafer. As well, piScraper has the ability to save the output of the script to a local CSV file. 
 
-## Config.ini
+## config.ini
 Config.ini contains three configuration settings: refreshtime, savecsv, and sendnotification. By default they are set to 300 seconds, y, and y. The script will check inventory every 5 minutes (300 sec), save to a local CSV file, and it will send a notification to a device using pushsafer. These values can all be changed, the refresh time must only be changed to an int > 60 sec to prevent constant refreshes.
 
 ## Constants.py

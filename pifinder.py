@@ -9,10 +9,28 @@ from configparser import ConfigParser
 def checkinventory():
     result = BeautifulSoup(requests.get(Constants.microcenter).content, "html.parser")\
         .find("p", class_="inventory").text.strip()
-    if result == "SOLD OUT at Denver Store":
+    if "SOLD OUT" in result:
         return 'Sold Out'
     else:
         return int(result)
+
+
+def checklocations():
+    # Get page content, parse it, and find the dropdown menu
+    content = requests.get('https://www.microcenter.com/product/621439/raspberry-pi-4-model-b---2gb-ddr4?').content
+    soup = BeautifulSoup(content, "html.parser")
+    result = soup.findAll(class_='dropdown-item')
+    # List of a list containing store #, State, and City
+    storelist = []
+    # Loop until second to last result - Last result is online shopping (Raspberry Pi not available to be shipped)
+    for i in range(len(result) - 1):
+        # Format results and append to the list
+        storelist.append(str(result[i]).split('storeid=')[1]
+                         .replace(' ', '')
+                         .replace('">', ", ")
+                         .replace("-", ", ")
+                         .replace("</a>", ""))
+    return storelist
 
 
 def sendnotification(message, title):

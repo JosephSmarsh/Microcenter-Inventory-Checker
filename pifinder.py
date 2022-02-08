@@ -6,6 +6,7 @@ from pushsafer import Client
 from configparser import ConfigParser
 
 
+# Check the inventory of Raspberry pis, return 'Sold out' or the number of raspberry pis in stock
 def checkinventory():
     result = BeautifulSoup(requests.get(Constants.microcenter).content, "html.parser")\
         .find("p", class_="inventory").text.strip()
@@ -15,6 +16,7 @@ def checkinventory():
         return int(result)
 
 
+# Check all current locations, return an array of locations with store #, state, and city
 def checklocations():
     # Get page content, parse it, and find the dropdown menu
     content = requests.get('https://www.microcenter.com/product/621439/raspberry-pi-4-model-b---2gb-ddr4?').content
@@ -33,6 +35,9 @@ def checklocations():
     return storelist
 
 
+# Send notification using pushsafer.
+# Message - Message to send.
+# Title - Tile of message
 def sendnotification(message, title):
     client = Client(Constants.pushsaferkey)
     device = Constants.deviceid
@@ -40,16 +45,21 @@ def sendnotification(message, title):
     client.send_message(message, title, device)
 
 
+# Return formatted time: H:M:S | M/D/Y
 def gettime():
     return datetime.now().strftime("%H:%M:%S | %m/%d/%Y")
 
 
+# Save data to historicaldata.csv.
+# data - Data to write to csv.
+# i - counter used for id#
 def savedata(data, i):
     with open('historicaldata.csv', 'a') as f:
         f.write("\n" + str(i) + ", " + data.replace(" | ", ", "))
         f.close()
 
 
+# Read config file, set first line of historicaldata.csv. Return refresh time, savecsv, and notification settings
 def setupscript():
     config = ConfigParser()
     config.read('config.ini')

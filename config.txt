@@ -1,6 +1,6 @@
-refreshtime       | Time between inventory check       | >60 sec |  = 60
-savecsv           | Save data to historicaldata.csv    | y/n     |  = y
-sendnotification  | Send notification to device        | y/n     |  = y
+refreshtime       | Time between inventory check       | >60 sec |  = 600
+savecsv           | Save data to historicaldata.csv    | y/n     |  =
+sendnotification  | Send notification to device        | y/n     |  =
 pushsaferkey      | Pushsafer key to account           |         |  =
 deviceid          | Device to send notification to     |         |  =
 microcenter       | Link of item to check inventory    |         |  =

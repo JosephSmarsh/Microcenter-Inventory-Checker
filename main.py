@@ -1,58 +1,61 @@
-from pifinder import checkinventory
-from pifinder import sendnotification
-from pifinder import gettime
-from pifinder import savedata
-from pifinder import setupscript
+from inventorycheck import checkinventory
+from inventorycheck import sendnotification
+from inventorycheck import gettime
+from inventorycheck import savedata
+from setup import createconfigobj
 import time
 
 
 def main():
+    config = createconfigobj()
     try:
-        # Read CONFIG file and assign refresh time, save to csv, and send notification values
-        # IF save == 'y', setupscript() creates and writes the first line to the historicaldata.csv
-        setupscript()
-        refresh = setupscript()[0]
-        save = setupscript()[1]
-        notification = setupscript()[2]
+        while config.isvalidconfig() is True:
+            refresh = config.refreshtime
+            save = config.savecsv
+            notification = config.sendnotification
 
-        # Initial State used to check inventory on startup for comparison checking for change
-        initialstate = checkinventory()
-        # Counter used for ID# in historicaldata.csv
-        counter = 1
+            # Initial State used to check inventory on startup for comparison checking for change
+            initialstate = checkinventory()
+            # Counter used for ID# in historicaldata.csv
+            counter = 1
 
-        # If config SAVE == y, save to file as well as console output
-        while save == 'y':
-            # Check inventory ONCE at start of while loop
-            currentstate = checkinventory()
-            output = currentstate + " | " + gettime()
-            print(output)
-            savedata(output, counter)
-            counter += 1
+            # If config SAVE == y, save to file as well as console output
+            if save == 'y':
+                # Check inventory ONCE at start of while loop
+                currentstate = checkinventory()
+                output = currentstate + " | " + gettime()
+                print(output)
+                savedata(output, counter)
+                counter += 1
 
-            # If there is a change in state and notifications are on, send notification, update initial state
-            if notification == "y" and currentstate != initialstate:
-                sendnotification(currentstate, "Inventory Change!")
-                # Set initial state to the new current state
-                initialstate = currentstate
+                # If there is a change in state and notifications are on, send notification, update initial state
+                if notification == "y" and currentstate != initialstate:
+                    sendnotification(currentstate, "Inventory Change!")
+                    # Set initial state to the new current state
+                    initialstate = currentstate
 
-            # Sleep while loop for refresh time defined in CONFIG.ini
-            time.sleep(refresh)
+                # Sleep while loop for refresh time defined in CONFIG.ini
 
-        # if config SAVE == 'n', only output to console
-        while save == 'n':
-            currentstate = checkinventory()
-            output = currentstate + " | " + gettime()
-            print(output)
-            counter += 1
+            # if config SAVE == 'n', only output to console
+            if save == 'n':
+                currentstate = checkinventory()
+                output = currentstate + " | " + gettime()
+                print(output)
+                counter += 1
 
-            # If there is a change in state and notifications are on, send notification, update initial state
-            if notification == "y" and currentstate != initialstate:
-                sendnotification(currentstate, "Inventory Change!")
-                # Set initial state to the new current state
-                initialstate = currentstate
+                # If there is a change in state and notifications are on, send notification, update initial state
+                if notification == "y" and currentstate != initialstate:
+                    sendnotification(currentstate, "Inventory Change!")
+                    # Set initial state to the new current state
+                    initialstate = currentstate
 
             # Sleep while loop for refresh time defined in CONFIG.ini
-            time.sleep(refresh)
+            time.sleep(int(refresh))
+
+        # If config is invalid, print:
+        else:
+            print('Invalid Configuration')
+            print('Edit config or run setup.py')
 
 
         """ - Used for Config Class with config file 
@@ -80,7 +83,9 @@ def main():
             print(output)
             time.sleep(newconfig.refresh)
         """
-
+    except ConnectionError:
+        print(ConnectionError)
+        pass
     finally:
         pass
 

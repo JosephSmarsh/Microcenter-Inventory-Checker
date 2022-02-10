@@ -1,27 +1,35 @@
-import requests
+# STD library
 from bs4 import BeautifulSoup
 from datetime import datetime
-import Constants
+import requests
+# 3rd Party
 from pushsafer import Client
-from configparser import ConfigParser
+# Local
+from setup import createconfigobj
 
-
+# Create config object once
+config = createconfigobj()
 # Check the inventory of Raspberry pis, return 'Sold out' or the number of raspberry pis in stock
 def checkinventory():
-    result = BeautifulSoup(requests.get(Constants.microcenter).content, "html.parser")\
+    result = BeautifulSoup(requests.get(config.productlink).content, "html.parser")\
         .find("p", class_="inventory").text.strip()
     if "SOLD OUT" in result:
         return 'Sold Out'
     else:
-        return int(result)
+        return result.split(" ")[0] + " in stock"
+
+
+# Return Product name
+def checkproductname():
+    result = BeautifulSoup(requests.get(config.productlink).content, "html.parser")\
+        .find(class_='summary').select('span')
+    return result[1].text.replace(result[2].text, "")
 
 
 # Check all current locations, return an array of locations with store #, state, and city
 def checklocations():
-    # Get page content, parse it, and find the dropdown menu
-    content = requests.get('https://www.microcenter.com/product/621439/raspberry-pi-4-model-b---2gb-ddr4?').content
-    soup = BeautifulSoup(content, "html.parser")
-    result = soup.findAll(class_='dropdown-item')
+    result = BeautifulSoup(requests.get(config.productlink).content, "html.parser")\
+        .findAll(class_='dropdown-item')
     # List of a list containing store #, State, and City
     storelist = []
     # Loop until second to last result - Last result is online shopping (Raspberry Pi not available to be shipped)
@@ -39,8 +47,8 @@ def checklocations():
 # Message - Message to send.
 # Title - Tile of message
 def sendnotification(message, title):
-    client = Client(Constants.pushsaferkey)
-    device = Constants.deviceid
+    client = Client(config.pushsaferkey)
+    device = config.deviceid
 
     client.send_message(message, title, device)
 
@@ -57,23 +65,6 @@ def savedata(data, i):
     with open('historicaldata.csv', 'a') as f:
         f.write("\n" + str(i) + ", " + data.replace(" | ", ", "))
         f.close()
-
-
-# Read config file, set first line of historicaldata.csv. Return refresh time, savecsv, and notification settings
-def setupscript():
-    config = ConfigParser()
-    config.read('config.ini')
-
-    ttr = config.getint('main', 'refreshtime')
-    savecsv = config.get('main', 'savecsv')
-    notification = config.get('main', 'sendnotification')
-
-    if savecsv == "y":
-        with open("historicaldata.csv", "w") as f:
-            f.write("ID, INVENTORY, TIME, DATE")
-            f.close()
-
-    return ttr, savecsv, notification
 
 
 """ - Use for no config file setup 

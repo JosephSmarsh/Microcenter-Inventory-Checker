@@ -48,13 +48,28 @@ class Config:
         else:
             return False
 
-    # If send noticiation is y, ensure pushsaferkey and deviceid have values
+    # If send noticiation is y, ensure pushsaferkey and deviceid have values that work
+    # Store values in pushsafervalues.txt
+    # Check for valid values
     def isvalidpushsafer(self):
         if self.sendnotification.lower() == 'y':
-            if self.pushsaferkey == '' or self.deviceid == '':
-                return False
-            else:
-                return True
+            try:
+                with open('pushsafervalues.txt', 'r') as f:
+                    values = f.readline().split(',')
+                    f.close()
+                    if self.pushsaferkey == values[0] and self.deviceid == values[1]:
+                        return True
+                    else:
+                        return False
+            except OSError:
+                try:
+                    inventorycheck.sendnotification('Test Notification', 'Test Notification')
+                    with open('pushsafervalues.txt', 'w') as f:
+                        f.write(self.pushsaferkey + ',' + self.deviceid)
+                        f.close()
+                    return True
+                except:
+                    return False
         else:
             return True
 

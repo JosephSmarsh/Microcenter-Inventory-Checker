@@ -90,8 +90,9 @@ class Config:
                 f.write('ID, INVENTORY, TIME, DATE')
                 f.close()
 
+    @staticmethod
     # Open config.txt, print the contents line by line
-    def printconfig(self):
+    def printconfig():
         print('________________________________________________________________________')
         print('                         Current config                                 ')
         print('________________________________________________________________________')
@@ -102,7 +103,8 @@ class Config:
             f.close()
         print('________________________________________________________________________')
 
-    def printlocations(self):
+    @staticmethod
+    def printlocations():
         print('________________________________________________________________________')
         print('Store#, State, City')
         print('________________________________________________________________________')
@@ -163,8 +165,9 @@ class Config:
         else:
             return False
 
+    @staticmethod
     # Read current config.txt file, ask for input for value, write file line by line
-    def buildconfig(self):
+    def buildconfig():
         # Open config and add lines to lines
         with open('config.txt', 'r') as f:
             lines = f.readlines()

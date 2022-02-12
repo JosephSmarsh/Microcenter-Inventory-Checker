@@ -5,7 +5,7 @@ import requests
 # 3rd Party
 from pushsafer import Client
 # Local
-from setup import createconfigobj
+from config import createconfigobj
 
 # Create config object once
 config = createconfigobj()
@@ -15,7 +15,8 @@ result = BeautifulSoup(requests.get(config.productlink).content, "html.parser")
 
 # Check the inventory of Raspberry pis, return 'Sold out' or the number of raspberry pis in stock
 def checkinventory():
-    inventory = result.find("p", class_="inventory").text.strip()
+    inventory = BeautifulSoup(requests.get(config.productlink + '?storeid=' + config.storenumber).content, "html.parser")\
+        .find("p", class_="inventory").text.strip()
     if "SOLD OUT" in inventory:
         return 'Sold Out'
     else:
@@ -66,47 +67,3 @@ def savedata(data, i):
     with open('historicaldata.csv', 'a') as f:
         f.write("\n" + str(i) + ", " + data.replace(" | ", ", "))
         f.close()
-
-
-""" - Use for no config file setup 
-def setupscript():
-    while True:
-        ttr = int(input("Enter website refresh time (sec): "))
-        if ttr < 60:
-            print("Enter valid refresh time (>60 sec)")
-            continue
-        else:
-            while True:
-                savedata = input("Save data to historicaldata.csv (Y/N): ").lower()
-                if savedata == "n":
-                    break
-                elif savedata == "y":
-                    with open("historicaldata.csv", "w") as f:
-                        f.write("ID, INVENTORY, TIME, DATE")
-                        f.close()
-                    break
-                else:
-                    print("Enter a valid response")
-                    continue
-            return ttr, savedata
-"""
-""" - Use for Config Class with config file 
-class Config:
-    def __init__(self, refresh, save, notification):
-        self.refresh = refresh
-        self.save = save
-        self.notification = notification
-
-    def setupenv(self):
-        config = ConfigParser()
-        config.read('config.ini')
-
-        self.refresh = config.getint('main', 'refreshtime')
-        self.save = config.get('main', 'savecsv')
-        self.notification = config.get('main', 'sendnotification')
-
-        if self.save == "y":
-            with open("historicaldata.csv", "w") as f:
-                f.write("ID, INVENTORY, TIME, DATE")
-                f.close()
-"""

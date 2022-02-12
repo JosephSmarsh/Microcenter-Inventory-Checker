@@ -1,15 +1,28 @@
 # Used to validate productlink
 import requests
+import inventorycheck
+
 
 # Contains all config values
 class Config:
-    def __init__(self, refreshtime, savecsv, sendnotification, pushsaferkey, deviceid, productlink):
+    def __init__(self, refreshtime, savecsv, sendnotification, pushsaferkey, deviceid, productlink, storenumber):
         self.refreshtime = refreshtime
         self.savecsv = savecsv
         self.sendnotification = sendnotification
         self.pushsaferkey = pushsaferkey
         self.deviceid = deviceid
         self.productlink = productlink
+        self.storenumber = storenumber
+
+    def isvalidstore(self):
+        storenumbers = []
+        for i in range(len(inventorycheck.checklocations())):
+            storenumbers.append(inventorycheck.checklocations()[i].split(',')[0])
+
+        if self.storenumber in storenumbers:
+            return True
+        else:
+            return False
 
     # Check link contains base microcenter link, and link works
     def isvalidlink(self):
@@ -74,6 +87,14 @@ class Config:
             f.close()
         print('________________________________________________________________________')
 
+    def printlocations(self):
+        print('________________________________________________________________________')
+        print('Store#, State, City')
+        print('________________________________________________________________________')
+        for i in range(len(inventorycheck.checklocations())):
+            print(inventorycheck.checklocations()[i])
+        print('________________________________________________________________________')
+
     # Validate each item in config, print valid or invalid, then validate entire config and print valid or invalid
     def printvalidation(self):
         if self.isvalidrefresh() is True:
@@ -103,6 +124,11 @@ class Config:
         else:
             print('microcenter          INVALID')
 
+        if self.isvalidstore() is True:
+            print('storenumber          VALID')
+        else:
+            print('storenumber          INVALID')
+
         print('________________________________________________________________________')
 
         if self.isvalidconfig() is True:
@@ -117,7 +143,7 @@ class Config:
     def isvalidconfig(self):
         if self.isvalidrefresh() and self.isvalidlink() and \
                 self.isvalidsavecsv() and self.isvalidpushsafer() and \
-                self.isvalidsendnotification() is True:
+                self.isvalidsendnotification() and self.isvalidstore() is True:
             return True
         else:
             return False
@@ -149,8 +175,9 @@ def createconfigobj():
     pushsaferkey = variables[3].split('=')[1].replace(' ', '')
     deviceid = variables[4].split('=')[1].replace(' ', '')
     productlink = variables[5].split('=')[1].replace(' ', '')
+    storenumber = variables[6].split('=')[1].replace(' ', '')
 
-    config = Config(refreshtime, savecsv, sendnotification, pushsaferkey, deviceid, productlink)
+    config = Config(refreshtime, savecsv, sendnotification, pushsaferkey, deviceid, productlink, storenumber)
     return config
 
 
@@ -163,8 +190,13 @@ def main():
     config.printvalidation()
     # If user wants to change config, run buildconfig, then loop main again
     if input('Edit config (y/n): ').lower() == 'y':
-        config.buildconfig()
-        main()
+        if config.isvalidstore() is False and input('See store list? (y/n): ').lower() == 'y':
+            config.printlocations()
+            config.buildconfig()
+            main()
+        else:
+            config.buildconfig()
+            main()
     # Else escape script
     else:
         print('Closing config editor...')

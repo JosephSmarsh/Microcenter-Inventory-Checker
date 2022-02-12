@@ -9,33 +9,34 @@ from setup import createconfigobj
 
 # Create config object once
 config = createconfigobj()
+
+result = BeautifulSoup(requests.get(config.productlink).content, "html.parser")
+
+
 # Check the inventory of Raspberry pis, return 'Sold out' or the number of raspberry pis in stock
 def checkinventory():
-    result = BeautifulSoup(requests.get(config.productlink).content, "html.parser")\
-        .find("p", class_="inventory").text.strip()
-    if "SOLD OUT" in result:
+    inventory = result.find("p", class_="inventory").text.strip()
+    if "SOLD OUT" in inventory:
         return 'Sold Out'
     else:
-        return result.split(" ")[0] + " in stock"
+        return inventory.split(" ")[0] + " in stock"
 
 
 # Return Product name
 def checkproductname():
-    result = BeautifulSoup(requests.get(config.productlink).content, "html.parser")\
-        .find(class_='summary').select('span')
-    return result[1].text.replace(result[2].text, "")
+    product = result.find(class_='summary').select('span')
+    return product[1].text.replace(product[2].text, "")
 
 
 # Check all current locations, return an array of locations with store #, state, and city
 def checklocations():
-    result = BeautifulSoup(requests.get(config.productlink).content, "html.parser")\
-        .findAll(class_='dropdown-item')
+    locations = result.findAll(class_='dropdown-item')
     # List of a list containing store #, State, and City
     storelist = []
     # Loop until second to last result - Last result is online shopping (Raspberry Pi not available to be shipped)
-    for i in range(len(result) - 1):
+    for i in range(len(locations) - 1):
         # Format results and append to the list
-        storelist.append(str(result[i]).split('storeid=')[1]
+        storelist.append(str(locations[i]).split('storeid=')[1]
                          .replace(' ', '')
                          .replace('">', ", ")
                          .replace("-", ", ")

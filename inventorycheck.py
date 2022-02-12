@@ -10,11 +10,13 @@ from config import createconfigobj
 # Create config object once
 config = createconfigobj()
 
+# Base link used for product name, and locations (Dont need to refresh link everytime called. Just once at import.
 result = BeautifulSoup(requests.get(config.productlink).content, "html.parser")
 
 
 # Check the inventory of Raspberry pis, return 'Sold out' or the number of raspberry pis in stock
 def checkinventory():
+    # Dynamic link used for inventory, needs to be refreshed everytime function is called
     inventory = BeautifulSoup(requests.get(config.productlink + '?storeid=' + config.storenumber).content, "html.parser")\
         .find("p", class_="inventory").text.strip()
     if "SOLD OUT" in inventory:

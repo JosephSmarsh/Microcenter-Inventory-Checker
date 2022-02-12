@@ -3,7 +3,7 @@ import time
 # Local imports
 import inventorycheck
 from inventorycheck import (checkinventory, sendnotification, gettime, savedata)
-from setup import createconfigobj
+from config import createconfigobj
 
 
 def main():
@@ -11,21 +11,22 @@ def main():
         # Create config object
         config = createconfigobj()
         # Print Valid Config at start of script if config is valid
-        if config.isvalidconfig() is True:
+        validconfig = config.isvalidconfig() is True
+        if validconfig:
             print('Valid Config')
             print('Checking inventory for: ' + inventorycheck.checkproductname())
+        if config.savecsv == 'y':
+            config.setcsv()
+        # Counter used for ID# in historicaldata.csv
+        counter = 1
         # While config settings are valid
-        while config.isvalidconfig() is True:
+        while validconfig:
 
             # Initial State used to check inventory on startup for comparison checking for change
             initialstate = checkinventory()
-            # Counter used for ID# in historicaldata.csv
-            counter = 1
 
             # If config SAVE == y, save to file as well as console output
             if config.savecsv == 'y':
-                # Setup CSV file
-                config.setcsv()
                 # Check inventory ONCE at start of while loop
                 currentstate = checkinventory()
                 output = currentstate + " | " + gettime()
@@ -57,18 +58,13 @@ def main():
             # Sleep while loop for refresh time defined in CONFIG.ini
             time.sleep(int(config.refreshtime))
 
-        # If config is invalid, ask to launch setup.py to fix config
+        # If config is invalid, ask to launch config.py to fix config
         else:
             print('Invalid Configuration')
             if input('Edit config now? (y/n): ').lower() == 'y':
-                print('Launching setup.py...')
+                print('Launching config.py...')
                 time.sleep(2)
-                exec(open('setup.py').read())
-
-    # Might be redundant now that link is validated as part of setup.py
-    except ConnectionError:
-        print(ConnectionError)
-        pass
+                exec(open('config.py').read())
 
     finally:
         pass

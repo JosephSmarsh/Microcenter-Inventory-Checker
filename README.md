@@ -25,7 +25,7 @@ Currently the project requires:
 ## Installation
 Clone:
 ```
-https://github.com/JosephSmarsh/Microcenter-Inventory-Checker.git
+git clone https://github.com/JosephSmarsh/Microcenter-Inventory-Checker.git
 ```
 Install dependencies:
 ```

@@ -33,4 +33,7 @@ pip install -r requirements.txt
 ```
 
 ## Running Microcenter Inventory Checker
+```
+python3 main.py
+```
 The setup is handled within main.py. Running main.py will validate the config settings provided. If the configuration is invalid, the user will be prompted to correct the config and config.py will be started. config.py validates all the config values and provides a store list if a valid one hasnt been provided. 

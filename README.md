@@ -1,21 +1,16 @@
-# Raspberry Pi Inventory Checker
-Raspberry Pi Inventory Checker gathers current raspberry pi inventory from local and national stores and checks for changes in that inventory. If there is a change in the status of the inventory, Raspberry Pi Inventory Checker can send a notification using pushsafer. As well, piScraper has the ability to save the output of the script to a local CSV file. 
+# Microcenter Inventory Checker
+Microcenter Inventory checker checks the inventory of a given item as often as the user defines. If the state of the inventory changes, the script will send the user a notification using pushsafer. This notification can be sent to any device that supports pushsafer. The user will be asked if they want to save the data to a csv file. This file will contain a history of the data the script returns. The user also has the option to set the store location to get an accurate inventory at any given microcenter location. 
 
-## config.ini
-Config.ini contains three configuration settings: refreshtime, savecsv, and sendnotification. By default they are set to 300 seconds, y, and y. The script will check inventory every 5 minutes (300 sec), save to a local CSV file, and it will send a notification to a device using pushsafer. These values can all be changed, the refresh time must only be changed to an int > 60 sec to prevent constant refreshes.
+## config.txt
+The config file contains all of the configuration settings that can be modified by the user. This file can be modified with any text editor. If the config is invalid the user will be prompted to modify the config. The config can also be modified by running config.py. Below is a list of the configuration options and what they do. 
 
-## Constants.py
-Currently not included in the project is the Constants.py file. This file is required to run the script properly. It containts three variabls: pushsaferkey, deviceid, and microcenter (soon to be an array of links). 
-```python
-pushsaferkey = ''
-deviceid = ''
-microcenter = ''
-```
-pushsaferkey: Acquired when you register for [pushsafer](https://www.pushsafer.com/ "Pushsafer Registration"). 
-
-deviceid: Acquired when a device is registered to your pushsafer account
-
-microcenter: The link to the microcenter page (To be made an array of national links and local stores)
+* refresh time - The time (in seconds) between inventory checks. This value must be greater than 60 to prevent getting blacklisted from the website. Microcenter states on their  own website that they only refresh the inventory every ten minutes. So setting this value to anything under 600 seconds is pointless.
+* savecsv - A yes or no option to save the data to the historicaldata.csv file. Useful for evaluating historically inventory changes
+* sendnotification - A yes or no option to send the user a notification using pushsafer. If this is set to yes, valid pushsafer credentials must be input
+* pushsaferkey - The pushsafer private key for the user. This is provided in the pushsafer dashboard.
+* deviceid - The device you would like have the notification sent to. This is also provided on the pushsafer dashboard.
+* microcenter - This is the entire link to the product you would like to check the inventory of. Just find the product, grab the url, and paste it here
+* storenumber - The store number inventory will be checked at. For a current list, run config.py
 
 ## requirements.txt
 Currently the project requires:
@@ -30,15 +25,15 @@ Currently the project requires:
 ## Installation
 Clone:
 ```
-git clone https://github.com/JosephSmarsh/Raspberry-Pi-Inventory-Checker.git
+git clone https://github.com/JosephSmarsh/Microcenter-Inventory-Checker.git
 ```
 Install dependencies:
 ```
 pip install -r requirements.txt
 ```
-Navigate to the installation directory, add Constants.py with your credentials. 
 
-Then run the script: 
+## Running Microcenter Inventory Checker
 ```
-python main.py
+python3 main.py
 ```
+The setup is handled within main.py. Running main.py will validate the config settings provided. If the configuration is invalid, the user will be prompted to correct the config and config.py will be started. config.py validates all the config values and provides a store list if a valid one hasnt been provided. 

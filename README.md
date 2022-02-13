@@ -25,7 +25,7 @@ Currently the project requires:
 ## Installation
 Clone:
 ```
-git clone https://github.com/JosephSmarsh/Raspberry-Pi-Inventory-Checker.git
+https://github.com/JosephSmarsh/Microcenter-Inventory-Checker.git
 ```
 Install dependencies:
 ```

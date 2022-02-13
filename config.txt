@@ -4,3 +4,4 @@ sendnotification  | Send notification to device        | y/n     |  =
 pushsaferkey      | Pushsafer key to account           |         |  =
 deviceid          | Device to send notification to     |         |  =
 microcenter       | Link of item to check inventory    |         |  =
+storenumber       | Store number                       |         |  =
